@@ -1,10 +1,17 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
+import { generateRandomString, sha256, base64encode } from './spotify'
 import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+
+  const geenrateChallenge = async () => {
+    const codeVerifier = generateRandomString(64);
+    const hashed = await sha256(codeVerifier);
+    const codeChallenge = base64encode(hashed);
+  }
 
   return (
     <>
