@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
-import { authorize, parseCode } from './spotify'
+import { authorizeClick, codeClick, playlistClick } from './spotify'
 import viteLogo from '/vite.svg'
 import './App.css'
 
@@ -17,11 +17,14 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={authorize}>
+        <button onClick={authorizeClick}>
           Spotify Auth Test
         </button>
-        <button onClick={parseCode}>
+        <button onClick={codeClick}>
           Parse Spotify Code Test
+        </button>
+        <button onClick={playlistClick}>
+          Create example playlist
         </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
