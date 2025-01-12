@@ -2,7 +2,7 @@ const clientId = '18f14aa15de04555bb6265565305ef67';
 const redirectUri = 'http://localhost:3000';
 const tokenEndpoint = "https://accounts.spotify.com/api/token"
 
-const scope = 'user-read-private user-read-email user-top-read playlist-modify-public';
+const scope = 'user-read-private user-read-email user-top-read playlist-modify-public playlist-modify-private';
 const authUrl = new URL("https://accounts.spotify.com/authorize");
 
 // Code for PKCE token generation and authentication
@@ -29,7 +29,6 @@ const getToken = async code => {
 
   // stored in the previous step
   let codeVerifier = localStorage.getItem('code_verifier');
-  console.log(codeVerifier);
 
   const payload = {
     method: 'POST',
@@ -55,7 +54,6 @@ const authorize = async () => {
   const codeVerifier = generateRandomString(64);
   const hashed = await sha256(codeVerifier);
   const codeChallenge = base64encode(hashed);
-  console.log(codeVerifier);
   window.localStorage.setItem('code_verifier', codeVerifier);
 
   const params = {
@@ -69,6 +67,12 @@ const authorize = async () => {
 
   authUrl.search = new URLSearchParams(params).toString();
   window.location.href = authUrl.toString();
+}
+
+const acquireToken = async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  let code = urlParams.get('code');
+  await getToken(code);
 }
 
 const fetchWebApi = async (token, endpoint, method, body) => {
@@ -89,25 +93,39 @@ const getTopArtists = async (token) => {
   )).items;
 }
 
-const acquireToken = async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  let code = urlParams.get('code');
-  await getToken(code);
-  console.log(localStorage.getItem('access_token'));
+const createPlaylist = async (token, user_id, name, tracks_uri) => {
+  const body = {
+    "name": name,
+    "description": "Playlist created by student project VizzyBeats",
+    "public": false
+  }
+  const playlist = await fetchWebApi(
+    token, `v1/users/${user_id}/playlists`, 'POST', body
+  );
+
+  await fetchWebApi(token, `v1/playlists/${playlist.id}/tracks?uris=${tracks_uri.join(',')}`, 'POST');
+  return playlist;
 }
 
 // This request combines a query and genre to search for playlists.
 // In theory, the query is a label from an image, and the genre is from the users' top genres.
-const getPlaylists = async (token, query, genre) => {
-  return (await fetchWebApi(
-    token, `v1/search?&q=${query}%20${genre}&type=playlist&market=ES&limit=3&offset=2`, 'GET'
-  )).playlists.items;
+const getPlaylists = async (token, query, genre, limit) => {
+  let playlists = [];
+
+  while (playlists.length < limit) {
+    const response = (await fetchWebApi(
+      token, `v1/search?&q=${query}%20${genre}&type=playlist&market=ES&limit=10&offset=2`, 'GET'
+    )).playlists.items;
+    const valid_playlists = response.filter(item => item !== null);
+    playlists = playlists.concat(valid_playlists);
+  }
+  return playlists.slice(0, limit);
 }
 
 const getTrackUris = async (token, id) => {
   return (await fetchWebApi(
     token, `v1/playlists/${id}?market=ES`, 'GET'
-  )).tracks.items?.map(item => item.track.id);
+  )).tracks.items?.map(item => item.track.uri);
 }
 
 const extractUris = async (token, playlistIds, limit) => {
@@ -128,12 +146,11 @@ const extractUris = async (token, playlistIds, limit) => {
       uris.push(tracks[i]);
     }
   }
-  console.log(uris);
   return uris;
 }
 
 const getLabels = () => {
-  return ["space"];
+  return ["space", "planet", "galaxy"];
 }
 
 const generatePlaylist = async () => {
@@ -150,12 +167,15 @@ const generatePlaylist = async () => {
     let uris = [];
     for (const label of labels) {
       const random_genre = top_genres[Math.floor(Math.random() * top_genres.length)];
-      const playlists = await getPlaylists(access_token, label, random_genre);
-      console.log(playlists);
-      const playlist_ids = playlists.filter(item => item !== null).map(item => item.id);
-      console.log(playlist_ids);
-      uris = uris.concat(extractUris(access_token, playlist_ids, 5));
+      const playlists = await getPlaylists(access_token, label, random_genre, 3);
+      const playlist_ids = playlists.map(item => item.id);
+      uris = uris.concat(await extractUris(access_token, playlist_ids, 5));
     }
+
+    const { id: user_id } = await fetchWebApi(access_token, 'v1/me', 'GET');
+    const playlist_name = labels.concat(["jams"]).join(" ");
+    const playlist = await createPlaylist(access_token, user_id, playlist_name, uris);
+    console.log(`Playlist created with name '${playlist.name}'`)
   } else {
     console.error("access token not found.")
   }
