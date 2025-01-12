@@ -96,16 +96,28 @@ const acquireToken = async () => {
   console.log(localStorage.getItem('access_token'));
 }
 
-const createPlaylist = async () => {
+const getTracks = async (token, query, genre) => {
+  return (await fetchWebApi(
+    token, `v1/search?&q=${query}&type=album&limit=5`, 'GET'
+  ));
+}
+
+const getLabels = () => {
+  return ["space"];
+}
+
+const generatePlaylist = async () => {
   const access_token = localStorage.getItem('access_token')
   if (access_token) {
     const topArtists = await getTopArtists(access_token);
-    console.log(
-      topArtists?.map(
-        ({ name, id }) =>
-          `${name} with id ${id}`
-      )
-    );
+    const labels = getLabels();
+    const topGenres = topArtists.map(item => item.genres).flat();
+    const uris = [];
+    for (const label of labels) {
+      const randomGenre = topGenres[Math.floor(Math.random() * topGenres.length)];
+      const tracks = await getTracks(access_token, label, randomGenre);
+      console.log(tracks);
+    }
   } else {
     console.error("access token not found.")
   }
@@ -122,5 +134,5 @@ export const codeClick = () => {
 }
 
 export const playlistClick = () => {
-  createPlaylist();
+  generatePlaylist();
 }
