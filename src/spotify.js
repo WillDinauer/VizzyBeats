@@ -96,10 +96,40 @@ const acquireToken = async () => {
   console.log(localStorage.getItem('access_token'));
 }
 
-const getTracks = async (token, query, genre) => {
+// This request combines a query and genre to search for playlists.
+// In theory, the query is a label from an image, and the genre is from the users' top genres.
+const getPlaylists = async (token, query, genre) => {
   return (await fetchWebApi(
-    token, `v1/search?&q=${query}&type=album&limit=5`, 'GET'
-  ));
+    token, `v1/search?&q=${query}%20${genre}&type=playlist&market=ES&limit=3&offset=2`, 'GET'
+  )).playlists.items;
+}
+
+const getTrackUris = async (token, id) => {
+  return (await fetchWebApi(
+    token, `v1/playlists/${id}?market=ES`, 'GET'
+  )).tracks.items?.map(item => item.track.id);
+}
+
+const extractUris = async (token, playlistIds, limit) => {
+  const uris = []
+  for (const id of playlistIds) {
+    const tracks = await getTrackUris(token, id);
+
+    // Small playlist handler
+    if (tracks.length <= limit) {
+      uris = uris.concat(tracks)
+      continue;
+    }
+
+    // Fisher-Yates Shuffle for random selection
+    for (let i = 0; i < limit; i++) {
+      const randomIndex = i + Math.floor(Math.random() * (tracks.length - i));
+      [tracks[i], tracks[randomIndex]] = [tracks[randomIndex], tracks[i]];
+      uris.push(tracks[i]);
+    }
+  }
+  console.log(uris);
+  return uris;
 }
 
 const getLabels = () => {
@@ -109,14 +139,22 @@ const getLabels = () => {
 const generatePlaylist = async () => {
   const access_token = localStorage.getItem('access_token')
   if (access_token) {
-    const topArtists = await getTopArtists(access_token);
+    // Get the top genres for the users, to help with recommendations
+    const top_artists = await getTopArtists(access_token);
+    const top_genres = top_artists.map(item => item.genres).flat();
+
+    // Labels from images
     const labels = getLabels();
-    const topGenres = topArtists.map(item => item.genres).flat();
-    const uris = [];
+
+    // Scrape the URIs for building the playlist
+    let uris = [];
     for (const label of labels) {
-      const randomGenre = topGenres[Math.floor(Math.random() * topGenres.length)];
-      const tracks = await getTracks(access_token, label, randomGenre);
-      console.log(tracks);
+      const random_genre = top_genres[Math.floor(Math.random() * top_genres.length)];
+      const playlists = await getPlaylists(access_token, label, random_genre);
+      console.log(playlists);
+      const playlist_ids = playlists.filter(item => item !== null).map(item => item.id);
+      console.log(playlist_ids);
+      uris = uris.concat(extractUris(access_token, playlist_ids, 5));
     }
   } else {
     console.error("access token not found.")
