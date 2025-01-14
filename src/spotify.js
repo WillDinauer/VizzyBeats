@@ -75,6 +75,7 @@ const acquireToken = async () => {
   await getToken(code);
 }
 
+// Generic function for hitting Spotify endpoints
 const fetchWebApi = async (token, endpoint, method, body) => {
   const payload = {
     method,
@@ -89,7 +90,7 @@ const fetchWebApi = async (token, endpoint, method, body) => {
 
 const getTopArtists = async (token) => {
   return (await fetchWebApi(
-    token, 'v1/me/top/artists?&limit=2', 'GET'
+    token, 'v1/me/top/artists?&limit=5', 'GET'
   )).items;
 }
 
@@ -129,7 +130,7 @@ const getTrackUris = async (token, id) => {
 }
 
 const extractUris = async (token, playlistIds, limit) => {
-  const uris = []
+  let uris = []
   for (const id of playlistIds) {
     const tracks = await getTrackUris(token, id);
 
