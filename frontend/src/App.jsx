@@ -8,6 +8,7 @@ function App() {
   const [labels, setLabels] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;

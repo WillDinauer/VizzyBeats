@@ -1,10 +1,12 @@
 const express = require('express');
 const vision = require('@google-cloud/vision');
 const multer = require('multer');
+const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
 const port = 4000;
+app.use(cors());
 
 // Configure Multer for handling image uploads
 const upload = multer({ storage: multer.memoryStorage() });
@@ -29,6 +31,8 @@ app.post('/analyze-image', upload.single('image'), async (req, res) => {
         const topLabels = labels
             .slice(0, 3)
             .map(label => ({ description: label.description, score: label.score }));
+
+        console.log(topLabels);
 
         res.json({ labels: topLabels });
     } catch (error) {
