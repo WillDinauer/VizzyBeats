@@ -7,11 +7,15 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependency directories
 node_modules
 dist
 dist-ssr
+
+# Local environment and credentials
 *.local
 .env
+google-credentials.json
 
 # Editor directories and files
 .vscode/*
