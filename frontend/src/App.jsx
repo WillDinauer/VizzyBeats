@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './index.css';
 import './App.css';
+import spotifyIcon from './assets/white-spotify-icon.png';
 
 const App = () => {
-  const [showButton, setShowButton] = useState(false);
-  
+  const [showElements, setShowElements] = useState(false);
+
   useEffect(() => {
     const vizzybeats = document.getElementById('vizzybeats');
     const letters = Array.from(vizzybeats.children);
@@ -17,8 +18,8 @@ const App = () => {
     });
 
     setTimeout(() => {
-      setShowButton(true);
-    }, letters.length * 100 + 1600); // Ensure button appears only after the text animation completes
+      setShowElements(true);
+    }, letters.length * 100 + 1600);
   }, []);
 
   return (
@@ -28,8 +29,14 @@ const App = () => {
           <span key={index}>{char}</span>
         ))}
       </div>
-      <button id="spotify-button" className={showButton ? 'show' : ''}>
+
+      <div id="description" className={showElements ? 'show' : ''}>
+        Turn your photos into personalized Spotify playlists with the power of AI, matching your unique vibe and music taste
+      </div>
+
+      <button id="spotify-button" className={showElements ? 'show' : ''}>
         SIGN IN WITH SPOTIFY
+        <img src={spotifyIcon} alt="Spotify Icon" />
       </button>
     </div>
   );

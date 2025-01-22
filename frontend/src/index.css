@@ -5,7 +5,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: white;
-  font-family: 'Playfair Display', serif; /* Classy font */
-  transition: background-color 1s; /* Smooth background color transition */
+  background-color: rgb(255, 255, 255);
+  font-family: 'Roboto', serif;
+  transition: background-color 1s;
 }
