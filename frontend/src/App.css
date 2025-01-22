@@ -46,8 +46,14 @@
   font-size: 100px;
   color: black;
   opacity: 0;
+  animation-delay: 0s;
+  transition: opacity 1s, color 1s
+}
+
+#vizzybeats span.animate {
+  opacity: 1;
   animation: wave 1.2s forwards;
-  transition: color 1s;
+  animation-fill-mode: forwards;
 }
 
 #spotify-button {

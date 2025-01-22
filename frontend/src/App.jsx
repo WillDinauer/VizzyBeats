@@ -38,25 +38,30 @@ const App = () => {
         window.history.replaceState({}, document.title, updatedUrl);
     };
 
+    const initAnimation = () => {
+        const vizzybeats = document.getElementById('vizzybeats');
+        if (vizzybeats) {
+            const letters = Array.from(vizzybeats.children);
+            letters.forEach((letter, index) => {
+                setTimeout(() => {
+                    letter.classList.add('animate');
+                }, 1000 + index * 100);
+            });
+    
+            setTimeout(() => {
+                setShowElements(true);
+            }, letters.length * 100 + 1600);
+        }
+    };
+
+
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
     // Check if there is a code in the URL
     if (code) {
         fetchToken(code);
     } else {
-        const vizzybeats = document.getElementById('vizzybeats');
-        const letters = Array.from(vizzybeats.children);
-
-        letters.forEach((letter, index) => {
-        setTimeout(() => {
-            letter.style.opacity = 1;
-            letter.style.animationDelay = `${0.5 + index * 0.1}s`;
-        }, 1000 + index * 100);
-        });
-
-        setTimeout(() => {
-            setShowElements(true);
-        }, letters.length * 100 + 1600);   
+        window.onload = initAnimation;
     }
   }, []);
 
