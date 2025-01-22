@@ -25,31 +25,6 @@ const base64encode = (input) => {
     .replace(/\//g, '_');
 }
 
-const getToken = async code => {
-
-  // stored in the previous step
-  let codeVerifier = localStorage.getItem('code_verifier');
-
-  const payload = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      client_id: clientId,
-      grant_type: 'authorization_code',
-      code,
-      redirect_uri: redirectUri,
-      code_verifier: codeVerifier,
-    }),
-  }
-
-  const body = await fetch(tokenEndpoint, payload);
-  const response = await body.json();
-
-  localStorage.setItem('access_token', response.access_token);
-}
-
 const authorize = async () => {
   const codeVerifier = generateRandomString(64);
   const hashed = await sha256(codeVerifier);
@@ -69,10 +44,27 @@ const authorize = async () => {
   window.location.href = authUrl.toString();
 }
 
-const acquireToken = async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  let code = urlParams.get('code');
-  await getToken(code);
+export const getToken = async code => {
+  // stored in the previous step
+  let codeVerifier = localStorage.getItem('code_verifier');
+
+  const payload = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+      client_id: clientId,
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri,
+      code_verifier: codeVerifier,
+    }),
+  }
+
+  const body = await fetch(tokenEndpoint, payload);
+  const response = await body.json();
+  return response;
 }
 
 // Generic function for hitting Spotify endpoints
@@ -173,6 +165,7 @@ const generatePlaylist = async () => {
       uris = uris.concat(await extractUris(access_token, playlist_ids, 5));
     }
 
+    // Playlist creation
     const { id: user_id } = await fetchWebApi(access_token, 'v1/me', 'GET');
     const playlist_name = labels.concat(["jams"]).join(" ");
     const playlist = await createPlaylist(access_token, user_id, playlist_name, uris);
@@ -185,13 +178,4 @@ const generatePlaylist = async () => {
 // Buttons to handle clicks
 export const authorizeClick = () => {
   authorize();
-}
-
-// Test functions (remove for production)
-export const codeClick = () => {
-  acquireToken();
-}
-
-export const playlistClick = () => {
-  generatePlaylist();
 }
