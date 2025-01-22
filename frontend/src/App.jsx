@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './index.css';
 import './App.css';
 import spotifyIcon from './assets/white-spotify-icon.png';
+import { authorizeClick } from './spotify';
 
 const App = () => {
   const [showElements, setShowElements] = useState(false);
@@ -36,7 +37,7 @@ const App = () => {
           Turn your photos into personalized Spotify playlists with the power of AI, matching your unique vibe and music taste
         </div>
 
-        <button id="spotify-button" className={showElements ? 'show' : ''}>
+        <button onClick={authorizeClick} id="spotify-button" className={showElements ? 'show' : ''}>
           SIGN IN WITH SPOTIFY
           <img src={spotifyIcon} alt="Spotify Icon" />
         </button>
