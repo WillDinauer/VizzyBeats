@@ -23,21 +23,24 @@ const App = () => {
   }, []);
 
   return (
-    <div id="login-container">
-      <div id="vizzybeats">
-        {'vizzybeats'.split('').map((char, index) => (
-          <span key={index}>{char}</span>
-        ))}
-      </div>
+    <div>
+      <div id="gradient-background" className={showElements ? 'show' : ''}></div>
+      <div id="login-container" className={showElements ? 'show' : ''}>
+        <div id="vizzybeats">
+          {'vizzybeats'.split('').map((char, index) => (
+            <span key={index}>{char}</span>
+          ))}
+        </div>
 
-      <div id="description" className={showElements ? 'show' : ''}>
-        Turn your photos into personalized Spotify playlists with the power of AI, matching your unique vibe and music taste
-      </div>
+        <div id="description" className={showElements ? 'show' : ''}>
+          Turn your photos into personalized Spotify playlists with the power of AI, matching your unique vibe and music taste
+        </div>
 
-      <button id="spotify-button" className={showElements ? 'show' : ''}>
-        SIGN IN WITH SPOTIFY
-        <img src={spotifyIcon} alt="Spotify Icon" />
-      </button>
+        <button id="spotify-button" className={showElements ? 'show' : ''}>
+          SIGN IN WITH SPOTIFY
+          <img src={spotifyIcon} alt="Spotify Icon" />
+        </button>
+      </div>
     </div>
   );
 };
