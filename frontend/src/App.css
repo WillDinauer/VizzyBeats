@@ -1,9 +1,11 @@
+/***** STYLING FOR LOGIN PAGE *****/
 #gradient-background {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;  
+  height: 100vh;
+  /* Consider trying to add waves here */
   background: linear-gradient(to bottom, rgb(200, 177, 251) 20%, rgb(172, 134, 254) 20%, rgb(172, 134, 254) 80%, rgb(137, 83, 251) 80%);
   opacity: 0;
   transition: opacity 1s ease-in-out;
@@ -76,16 +78,16 @@
 }
 
 #spotify-button:hover {
-    color: gray;
+  color: gray;
 }
 
 #spotify-button img {
-    filter: brightness(1);
-    transition: filter 0.2s ease;
+  filter: brightness(1);
+  transition: filter 0.2s ease;
 }
-  
+
 #spotify-button:hover img {
-    filter: brightness(0.7);
+  filter: brightness(0.7);
 }
 
 #spotify-button img {
@@ -120,4 +122,89 @@
   to {
     opacity: 1;
   }
+}
+
+/*********** STYLING FOR MAIN PAGE ************/
+
+#dashboard {
+  text-align: center;
+  margin-top: 50px;
+  font-family: Arial, sans-serif;
+}
+
+#dashboard h1 {
+  font-size: 2.5rem;
+  color: #1DB954;
+}
+
+#dashboard p {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.dashboard-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 30px;
+}
+
+.image-preview {
+  width: 600px;
+  height: 600px;
+  border: 2px dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+}
+
+.image-preview img {
+  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.image-preview p {
+  color: white;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.upload-btn {
+  background-color: #1DB954;
+  color: white;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-btn:hover {
+  background-color: #17a34a;
+}
+
+.generate-btn {
+  color: white;
+  padding: 15px 30px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+}
+
+.generate-btn:disabled {
+  color: rgb(173, 173, 173);
+  cursor: not-allowed;
+  pointer-events: none;
 }

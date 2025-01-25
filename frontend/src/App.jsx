@@ -10,48 +10,57 @@ const App = () => {
   const [showElements, setShowElements] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  const [image, setImage] = useState(null);
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(URL.createObjectURL(file));
+    }
+  };
+
   useEffect(() => {
     const fetchToken = async (code) => {
-        if (hasFetched.current) {
-            return;
+      if (hasFetched.current) {
+        return;
+      }
+      hasFetched.current = true;
+
+      // Do the token exchange with Spotify
+      try {
+        const tokenResponse = await getToken(code);
+        if (tokenResponse.access_token) {
+          setIsAuthenticated(true);
+          localStorage.setItem('access_token', tokenResponse.access_token);
+        } else {
+          console.error('Error retrieving access token:', tokenResponse);
         }
-        hasFetched.current = true;
+      } catch (error) {
+        console.error('Error fetching Spotify token:', error);
+      }
 
-        // Do the token exchange with Spotify
-        try {
-            const tokenResponse = await getToken(code);
-            if (tokenResponse.access_token) {
-                setIsAuthenticated(true);
-                localStorage.setItem('access_token', tokenResponse.access_token);
-            } else {
-                console.error('Error retrieving access token:', tokenResponse);
-            }
-        } catch (error) {
-            console.error('Error fetching Spotify token:', error);
-        }
+      // Clear code from URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("code");
 
-        // Clear code from URL
-        const url = new URL(window.location.href);
-        url.searchParams.delete("code");
-
-        const updatedUrl = url.search ? url.href : url.href.replace('?', '');
-        window.history.replaceState({}, document.title, updatedUrl);
+      const updatedUrl = url.search ? url.href : url.href.replace('?', '');
+      window.history.replaceState({}, document.title, updatedUrl);
     };
 
     const initAnimation = () => {
-        const vizzybeats = document.getElementById('vizzybeats');
-        if (vizzybeats) {
-            const letters = Array.from(vizzybeats.children);
-            letters.forEach((letter, index) => {
-                setTimeout(() => {
-                    letter.classList.add('animate');
-                }, 1000 + index * 100);
-            });
-    
-            setTimeout(() => {
-                setShowElements(true);
-            }, letters.length * 100 + 1600);
-        }
+      const vizzybeats = document.getElementById('vizzybeats');
+      if (vizzybeats) {
+        const letters = Array.from(vizzybeats.children);
+        letters.forEach((letter, index) => {
+          setTimeout(() => {
+            letter.classList.add('animate');
+          }, 1000 + index * 100);
+        });
+
+        setTimeout(() => {
+          setShowElements(true);
+        }, letters.length * 100 + 1600);
+      }
     };
 
 
@@ -59,9 +68,9 @@ const App = () => {
     const code = params.get('code');
     // Check if there is a code in the URL
     if (code) {
-        fetchToken(code);
+      fetchToken(code);
     } else {
-        window.onload = initAnimation;
+      window.onload = initAnimation;
     }
   }, []);
 
@@ -69,9 +78,34 @@ const App = () => {
     <div>
       {isAuthenticated ? (
         <div id="dashboard">
-          <h1>Welcome to VizzyBeats!</h1>
-          <p>Your Spotify account is now connected.</p>
+          <h1>Upload an Image to Generate an Album</h1>
+          <p>Select an image to get started. Then, generate a Spotify playlist blending the image and your music taste.</p>
+
+          <div className="dashboard-content">
+            <div
+              className="image-preview"
+              style={{
+                backgroundColor: image ? 'black' : 'gray',
+              }}
+            >
+              {image ? <img src={image} alt="Uploaded" /> : <p>No image selected</p>}
+            </div>
+            <div className="controls">
+              <label className="upload-btn">
+                Upload Photo
+                <input type="file" accept="image/*" onChange={handleImageUpload} hidden />
+              </label>
+              <button
+                className="generate-btn"
+                style={{
+                  backgroundColor: image ? '#ff4d4d' : 'gray'
+                }}
+                disabled={!image}
+              >Generate album</button>
+            </div>
+          </div>
         </div>
+
       ) : (
         <>
           <div id="gradient-background" className={showElements ? 'show' : ''}></div>
