@@ -15,6 +15,7 @@ const App = () => {
   const [previewUrl, setPreviewUrl] = useState(null); // Store image preview URL
   const [playlistId, setPlaylistId] = useState(null);
 
+  // Grab file and URL for preview after photo uploads
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -23,8 +24,9 @@ const App = () => {
     setPreviewUrl(URL.createObjectURL(file)); // Generate preview URL
   };
 
-  // Process the image, generate
+  // Process the image, generate album
   const handleGenerateClick = async () => {
+    // Update the user about the current state of the generation
     setIsLoading(true);
     try {
       const labels = await processImage();
@@ -32,15 +34,20 @@ const App = () => {
       const playlist_id = await generatePlaylist(labels);
       setPlaylistId(playlist_id);
     } catch (err) {
+      // Prompt user for a reload on failure
+      setLoadingText("An error occurred. Please reload the page and try again.")
       console.log(err);
     } finally {
       setIsLoading(false);
     }
   }
 
+  // Hits the backend to grab labels for image
   const processImage = async () => {
     const formData = new FormData();
     formData.append('image', image);
+
+    // Note: This will change to a render URL for deployment
     const response = await fetch('http://localhost:4000/analyze-image', {
       method: 'POST',
       body: formData,
@@ -50,10 +57,12 @@ const App = () => {
       throw new Error('Failed to analyze image');
     }
 
+    // Get the labels from the response
     const data = await response.json();
     return data.labels.map(item => item.description);
   };
 
+  // On webpage laod...
   useEffect(() => {
     const fetchToken = async (code) => {
       if (hasFetched.current) {
@@ -82,8 +91,10 @@ const App = () => {
       window.history.replaceState({}, document.title, updatedUrl);
     };
 
+    // Animation for 'vizzybeats' on login page
     const initAnimation = () => {
       const vizzybeats = document.getElementById('vizzybeats');
+      // Wave animation, letter-by-letter
       if (vizzybeats) {
         const letters = Array.from(vizzybeats.children);
         letters.forEach((letter, index) => {
@@ -92,6 +103,7 @@ const App = () => {
           }, 1000 + index * 100);
         });
 
+        // Content fades in after letters have appeared
         setTimeout(() => {
           setShowElements(true);
         }, letters.length * 100 + 1600);
@@ -105,6 +117,7 @@ const App = () => {
     if (code) {
       fetchToken(code);
     } else {
+      // No code.. show the login page w animations
       window.onload = initAnimation;
     }
   }, []);
@@ -112,11 +125,13 @@ const App = () => {
   return (
     <div>
       {
+        // User has logged in
         isAuthenticated ? (
           <div id="dashboard">
             <h1>Upload an Image to Generate an Album</h1>
             <p>Select an image to get started. Then, generate a Spotify playlist blending the image and your music taste.</p>
 
+            {/* Has the playlist been generated? */}
             {playlistId ? (<iframe
               title="Spotify Embed: Recommendation Playlist "
               src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`}
@@ -126,6 +141,7 @@ const App = () => {
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
               loading="lazy"
             />) : (
+              // Content prompting user for photo upload
               <div className="dashboard-content">
                 <div
                   className="image-preview"
@@ -156,6 +172,7 @@ const App = () => {
           </div>
 
         ) : (
+          // Login page
           <>
             <div id="gradient-background" className={showElements ? 'show' : ''}></div>
             <div id="login-container" className={showElements ? 'show' : ''}>
