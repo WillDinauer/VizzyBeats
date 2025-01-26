@@ -125,26 +125,32 @@
 }
 
 /*********** STYLING FOR MAIN PAGE ************/
-
 #dashboard {
+  border: 5px black;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(73, 0, 102);
+  padding: 50px;
   text-align: center;
   margin-top: 50px;
-  font-family: Arial, sans-serif;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
 }
 
 #dashboard h1 {
   font-size: 2.5rem;
-  color: #1DB954;
+  color: #ffffff;
 }
 
 #dashboard p {
   font-size: 1.2rem;
-  color: #333;
+  color: #b8b8b8;
   margin-bottom: 20px;
 }
 
 .dashboard-content {
   display: flex;
+  background-color: rgb(48, 0, 70);
+  padding: 40px;
   align-items: center;
   justify-content: center;
   gap: 40px;
@@ -154,7 +160,7 @@
 .image-preview {
   width: 600px;
   height: 600px;
-  border: 2px dashed #ccc;
+  border: 2px #ccc;
   display: flex;
   align-items: center;
   justify-content: center;

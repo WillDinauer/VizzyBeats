@@ -118,7 +118,7 @@ const getPlaylists = async (token, query, genre, limit) => {
 const getTrackUris = async (token, id) => {
   return (await fetchWebApi(
     token, `v1/playlists/${id}?market=ES`, 'GET'
-  )).tracks.items?.map(item => item.track.uri);
+  )).tracks?.items?.map(item => item.track.uri);
 }
 
 const extractUris = async (token, playlistIds, limit) => {
@@ -142,19 +142,20 @@ const extractUris = async (token, playlistIds, limit) => {
   return uris;
 }
 
-const getLabels = () => {
-  return ["space", "planet", "galaxy"];
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1)); // Get a random index from 0 to i
+    [array[i], array[j]] = [array[j], array[i]];  // Swap elements
+  }
+  return array;
 }
 
-const generatePlaylist = async () => {
+export const generatePlaylist = async (labels) => {
   const access_token = localStorage.getItem('access_token')
   if (access_token) {
     // Get the top genres for the users, to help with recommendations
     const top_artists = await getTopArtists(access_token);
     const top_genres = top_artists.map(item => item.genres).flat();
-
-    // Labels from images
-    const labels = getLabels();
 
     // Scrape the URIs for building the playlist
     let uris = [];
@@ -166,10 +167,11 @@ const generatePlaylist = async () => {
     }
 
     // Playlist creation
+    uris = shuffleArray(uris);
     const { id: user_id } = await fetchWebApi(access_token, 'v1/me', 'GET');
-    const playlist_name = labels.concat(["jams"]).join(" ");
+    const playlist_name = labels.concat(["jams"]).join(" ").toLowerCase();
     const playlist = await createPlaylist(access_token, user_id, playlist_name, uris);
-    console.log(`Playlist created with name '${playlist.name}'`)
+    return playlist.id;
   } else {
     console.error("access token not found.")
   }
