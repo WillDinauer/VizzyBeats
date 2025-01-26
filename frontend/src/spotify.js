@@ -82,7 +82,7 @@ const fetchWebApi = async (token, endpoint, method, body) => {
 
 const getTopArtists = async (token) => {
   return (await fetchWebApi(
-    token, 'v1/me/top/artists?&limit=5', 'GET'
+    token, 'v1/me/top/artists?&limit=10', 'GET'
   )).items;
 }
 
@@ -105,12 +105,14 @@ const createPlaylist = async (token, user_id, name, tracks_uri) => {
 const getPlaylists = async (token, query, genre, limit) => {
   let playlists = [];
 
-  while (playlists.length < limit) {
+  let i = 0;
+  while (playlists.length < limit && i <= limit * 3) {
     const response = (await fetchWebApi(
-      token, `v1/search?&q=${query}%20${genre}&type=playlist&market=ES&limit=10&offset=2`, 'GET'
+      token, `v1/search?&q=${query}%20${genre}&type=playlist&market=ES&limit=${limit}&offset=${i}`, 'GET'
     )).playlists.items;
     const valid_playlists = response.filter(item => item !== null);
     playlists = playlists.concat(valid_playlists);
+    i += limit;
   }
   return playlists.slice(0, limit);
 }
@@ -118,7 +120,7 @@ const getPlaylists = async (token, query, genre, limit) => {
 const getTrackUris = async (token, id) => {
   return (await fetchWebApi(
     token, `v1/playlists/${id}?market=ES`, 'GET'
-  )).tracks?.items?.map(item => item.track.uri);
+  )).tracks?.items?.map(item => item.track?.uri);
 }
 
 const extractUris = async (token, playlistIds, limit) => {
@@ -156,6 +158,7 @@ export const generatePlaylist = async (labels) => {
     // Get the top genres for the users, to help with recommendations
     const top_artists = await getTopArtists(access_token);
     const top_genres = top_artists.map(item => item.genres).flat();
+    console.log(`Top genres: ${top_genres}`)
 
     // Scrape the URIs for building the playlist
     let uris = [];

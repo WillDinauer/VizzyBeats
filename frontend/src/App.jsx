@@ -14,6 +14,8 @@ const App = () => {
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null); // Store image preview URL
   const [playlistId, setPlaylistId] = useState(null);
+  const [description, setDescription] = useState("Select an image to get started. Then, generate a Spotify playlist blending the image and your music taste.");
+  const [header, setHeader] = useState("Upload an Image to Generate an Album");
 
   // Grab file and URL for preview after photo uploads
   const handleImageChange = (event) => {
@@ -30,15 +32,16 @@ const App = () => {
     setIsLoading(true);
     try {
       const labels = await processImage();
-      setLoadingText("Generating playlist...");
+      setLoadingText("Generating playlist... (this may take a while)");
       const playlist_id = await generatePlaylist(labels);
       setPlaylistId(playlist_id);
+      setHeader("Your Playlist is Ready!")
+      setDescription("A playlist has been added to your Spotify account. Feel free to listen right here, right now.")
+      setIsLoading(false);
     } catch (err) {
       // Prompt user for a reload on failure
       setLoadingText("An error occurred. Please reload the page and try again.")
       console.log(err);
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -128,8 +131,8 @@ const App = () => {
         // User has logged in
         isAuthenticated ? (
           <div id="dashboard">
-            <h1>Upload an Image to Generate an Album</h1>
-            <p>Select an image to get started. Then, generate a Spotify playlist blending the image and your music taste.</p>
+            <h1>{header}</h1>
+            <p>{description}</p>
 
             {/* Has the playlist been generated? */}
             {playlistId ? (<iframe
@@ -143,31 +146,37 @@ const App = () => {
             />) : (
               // Content prompting user for photo upload
               <div className="dashboard-content">
-                <div
-                  className="image-preview"
-                  style={{
-                    backgroundColor: image ? 'black' : '#242526',
-                  }}
-                >
-                  {previewUrl ? <img src={previewUrl} alt="Uploaded" /> : <p>No image selected</p>}
-                </div>
+                {isLoading ? (
+                  <p id="loading">{loadingText}</p>
+                ) : (
+                  <>
+                    <div
+                      className="image-preview"
+                      style={{
+                        backgroundColor: image ? 'black' : '#242526',
+                      }}
+                    >
+                      {previewUrl ? <img src={previewUrl} alt="Uploaded" /> : <p>No image selected</p>}
+                    </div>
 
-                <div className="controls">
-                  <label className="upload-btn">
-                    Upload Photo
-                    <input type="file" accept="image/*" onChange={handleImageChange} hidden />
-                  </label>
-                  <button
-                    className="generate-btn"
-                    style={{
-                      backgroundColor: image ? '#ff4d4d' : 'gray',
-                    }}
-                    disabled={!image}
-                    onClick={handleGenerateClick}
-                  >
-                    Generate album
-                  </button>
-                </div>
+                    <div className="controls">
+                      <label className="upload-btn">
+                        Upload Photo
+                        <input type="file" accept="image/*" onChange={handleImageChange} hidden />
+                      </label>
+                      <button
+                        className="generate-btn"
+                        style={{
+                          backgroundColor: image ? '#ff4d4d' : 'gray',
+                        }}
+                        disabled={!image}
+                        onClick={handleGenerateClick}
+                      >
+                        Generate album
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>)}
           </div>
 

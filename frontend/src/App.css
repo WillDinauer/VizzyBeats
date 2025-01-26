@@ -144,7 +144,7 @@
 }
 
 #dashboard p {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   color: #b8b8b8;
   margin-bottom: 20px;
 }
@@ -217,4 +217,11 @@
   color: rgb(173, 173, 173);
   cursor: not-allowed;
   pointer-events: none;
+}
+
+#loading-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  animation: fade-in 1s ease-in-out infinite alternate;
 }
