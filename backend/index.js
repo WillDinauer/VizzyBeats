@@ -5,7 +5,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-const port = 4000;
+const port = process.env.PORT || 4000;
 app.use(cors());
 
 // Configure Multer for handling image uploads
@@ -13,7 +13,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Initialize Google Vision API client
 const client = new vision.ImageAnnotatorClient({
-    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS || './google-credentials.json',
 });
 
 // GET endpoint to process an uploaded image
