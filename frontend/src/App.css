@@ -6,7 +6,7 @@
   width: 100vw;
   height: 100vh;
   /* Consider trying to add waves here */
-  background: linear-gradient(to bottom, rgb(200, 177, 251) 20%, rgb(172, 134, 254) 20%, rgb(172, 134, 254) 80%, rgb(137, 83, 251) 80%);
+  background: linear-gradient(to bottom, rgba(62, 15, 161, 0.993) 20%, rgb(28, 1, 85) 20%, rgb(28, 1, 85) 80%, rgb(14, 2, 41) 80%);
   opacity: 0;
   transition: opacity 1s ease-in-out;
   z-index: -1;
@@ -28,7 +28,7 @@
 
 #description {
   font-size: 31px;
-  color: rgb(40, 39, 39);
+  color: rgb(216, 216, 216);
   margin-top: 20px;
   opacity: 0;
   visibility: hidden;
@@ -46,7 +46,7 @@
 #vizzybeats span {
   display: inline-block;
   font-size: 100px;
-  color: black;
+  color: rgb(127, 231, 179);
   opacity: 0;
   animation-delay: 0s;
   transition: opacity 1s, color 1s
@@ -126,10 +126,12 @@
 
 /*********** STYLING FOR MAIN PAGE ************/
 #dashboard {
-  border: 5px black;
+  width: 75vw;
+  height: 80vh;
+  border: 2px solid white;
   align-items: center;
   justify-content: center;
-  background-color: rgb(73, 0, 102);
+  background-color: rgb(42, 3, 58);
   padding: 50px;
   text-align: center;
   margin-top: 50px;
@@ -149,18 +151,19 @@
 
 .dashboard-content {
   display: flex;
-  background-color: rgb(48, 0, 70);
+  background-color: rgb(21, 0, 31);
+  height: 75%;
   padding: 40px;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+  gap: 100px;
   margin-top: 30px;
 }
 
 .image-preview {
   width: 600px;
   height: 600px;
-  border: 2px #ccc;
+  border: 2px #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;

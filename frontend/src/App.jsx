@@ -9,6 +9,8 @@ const App = () => {
   const hasFetched = useRef(false);
   const [showElements, setShowElements] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("Processing image...");
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null); // Store image preview URL
   const [playlistId, setPlaylistId] = useState(null);
@@ -21,15 +23,18 @@ const App = () => {
     setPreviewUrl(URL.createObjectURL(file)); // Generate preview URL
   };
 
+  // Process the image, generate
   const handleGenerateClick = async () => {
+    setIsLoading(true);
     try {
       const labels = await processImage();
-      console.log(`labels: ${labels}`)
+      setLoadingText("Generating playlist...");
       const playlist_id = await generatePlaylist(labels);
-      console.log(playlist_id);
       setPlaylistId(playlist_id);
     } catch (err) {
       console.log(err);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -112,33 +117,42 @@ const App = () => {
             <h1>Upload an Image to Generate an Album</h1>
             <p>Select an image to get started. Then, generate a Spotify playlist blending the image and your music taste.</p>
 
-            <div className="dashboard-content">
-              <div
-                className="image-preview"
-                style={{
-                  backgroundColor: image ? 'black' : 'gray',
-                }}
-              >
-                {previewUrl ? <img src={previewUrl} alt="Uploaded" /> : <p>No image selected</p>}
-              </div>
-
-              <div className="controls">
-                <label className="upload-btn">
-                  Upload Photo
-                  <input type="file" accept="image/*" onChange={handleImageChange} hidden />
-                </label>
-                <button
-                  className="generate-btn"
+            {playlistId ? (<iframe
+              title="Spotify Embed: Recommendation Playlist "
+              src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`}
+              width="100%"
+              height="85%"
+              style={{ minHeight: '500px' }}
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+            />) : (
+              <div className="dashboard-content">
+                <div
+                  className="image-preview"
                   style={{
-                    backgroundColor: image ? '#ff4d4d' : 'gray',
+                    backgroundColor: image ? 'black' : '#242526',
                   }}
-                  disabled={!image}
-                  onClick={handleGenerateClick}
                 >
-                  Generate album
-                </button>
-              </div>
-            </div>
+                  {previewUrl ? <img src={previewUrl} alt="Uploaded" /> : <p>No image selected</p>}
+                </div>
+
+                <div className="controls">
+                  <label className="upload-btn">
+                    Upload Photo
+                    <input type="file" accept="image/*" onChange={handleImageChange} hidden />
+                  </label>
+                  <button
+                    className="generate-btn"
+                    style={{
+                      backgroundColor: image ? '#ff4d4d' : 'gray',
+                    }}
+                    disabled={!image}
+                    onClick={handleGenerateClick}
+                  >
+                    Generate album
+                  </button>
+                </div>
+              </div>)}
           </div>
 
         ) : (
