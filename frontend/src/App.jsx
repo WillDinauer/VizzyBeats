@@ -51,7 +51,7 @@ const App = () => {
     formData.append('image', image);
 
     // Note: This will change to a render URL for deployment
-    const response = await fetch('http://localhost:4000/analyze-image', {
+    const response = await fetch('https://vizzybeats.onrender.com/analyze-image', {
       method: 'POST',
       body: formData,
     });
@@ -139,7 +139,7 @@ const App = () => {
               title="Spotify Embed: Recommendation Playlist "
               src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`}
               width="100%"
-              height="85%"
+              height="80%"
               style={{ minHeight: '500px' }}
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
               loading="lazy"
@@ -165,10 +165,7 @@ const App = () => {
                         <input type="file" accept="image/*" onChange={handleImageChange} hidden />
                       </label>
                       <button
-                        className="generate-btn"
-                        style={{
-                          backgroundColor: image ? '#ff4d4d' : 'gray',
-                        }}
+                        className={`generate-btn ${image ? 'enabled' : 'disabled'}`}
                         disabled={!image}
                         onClick={handleGenerateClick}
                       >

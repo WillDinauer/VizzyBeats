@@ -82,7 +82,7 @@ const fetchWebApi = async (token, endpoint, method, body) => {
 
 const getTopArtists = async (token) => {
   return (await fetchWebApi(
-    token, 'v1/me/top/artists?&limit=10', 'GET'
+    token, 'v1/me/top/artists?time_range=long_term', 'GET'
   )).items;
 }
 
@@ -158,7 +158,6 @@ export const generatePlaylist = async (labels) => {
     // Get the top genres for the users, to help with recommendations
     const top_artists = await getTopArtists(access_token);
     const top_genres = top_artists.map(item => item.genres).flat();
-    console.log(`Top genres: ${top_genres}`)
 
     // Scrape the URIs for building the playlist
     let uris = [];
