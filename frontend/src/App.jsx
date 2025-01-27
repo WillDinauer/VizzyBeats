@@ -10,7 +10,7 @@ const App = () => {
   const [showElements, setShowElements] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState("Processing image...");
+  const [loadingText, setLoadingText] = useState("Processing image... (this may take a while)");
   const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null); // Store image preview URL
   const [playlistId, setPlaylistId] = useState(null);
@@ -32,7 +32,7 @@ const App = () => {
     setIsLoading(true);
     try {
       const labels = await processImage();
-      setLoadingText("Generating playlist... (this may take a while)");
+      setLoadingText("Generating playlist...");
       const playlist_id = await generatePlaylist(labels);
       setPlaylistId(playlist_id);
       setHeader("Your Playlist is Ready!")
@@ -51,6 +51,7 @@ const App = () => {
     formData.append('image', image);
 
     // Note: This will change to a render URL for deployment
+    // If you want to test the backend locally, change this to a http://localhost address
     const response = await fetch('https://vizzybeats.onrender.com/analyze-image', {
       method: 'POST',
       body: formData,
